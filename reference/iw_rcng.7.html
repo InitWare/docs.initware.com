@@ -30,8 +30,27 @@
 DragonFlyBSD, FreeBSD, and NetBSD use <b class="Sy">Mewburn RC</b> as their
   native service management scheme, and InitWare releases for those platforms
   include a compatibility layer for the Mewburn RC system. RC scripts are
-  converted into InitWare .service units and run at boot, and TTY monitors are
-  run as normal according to the /etc/ttys file.
+  converted into InitWare .service transient units and run (if enabled) at boot.
+  The generated units retain dependency specifications and are first-class
+  units, and may be overrided by explicitly defined units or drop-ins.
+<p class="Pp">TTY monitors are run as normal according to the
+    <span class="Pa">/etc/ttys</span> file.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="IMPLEMENTATION"><a class="permalink" href="#IMPLEMENTATION">IMPLEMENTATION</a></h1>
+The compatibility subsystem is principally composed of a special Stage 1 and
+  Stage 3 Init (see
+  <a class="Xr" href="iw_bootstrap.7.html">iw_bootstrap(7)</a>) and a generator
+  (as described above; see
+  <a class="Xr" href="iw_generator.7.html">iw_generator(7)</a> for information
+  on generators in general) to convert Mewburn RC scripts to InitWare unitfiles.
+<p class="Pp">Note that the native BSD
+    <a class="Xr" href="init.8.html">init(8)</a> daemon
+    <code class="Nm">/sbin/init</code> is not replaced. Instead, the InitWare
+    manager is hooked into the system through modified versions of the
+    <code class="Nm">/etc/rc</code> and <code class="Nm">/etc/rc.shutdown</code>
+    scripts. /etc/ttys thus continues to work exactly as is usual of BSD
+    systems, since it's the responsibility of the BSD init daemon.</p>
 <section class="Ss">
 <h2 class="Ss" id="RC_script_generation"><a class="permalink" href="#RC_script_generation">RC
   script generation</a></h2>
@@ -50,22 +69,6 @@ Generated unit files are created thus:
       automatically started on boot.</li>
 </ul>
 </section>
-</section>
-<section class="Sh">
-<h1 class="Sh" id="IMPLEMENTATION"><a class="permalink" href="#IMPLEMENTATION">IMPLEMENTATION</a></h1>
-The compatibility subsystem is principally composed of a special Stage 1 and
-  Stage 3 Init (see
-  <a class="Xr" href="iw_bootstrap.7.html">iw_bootstrap(7)</a>) and a generator
-  (as described above; see
-  <a class="Xr" href="iw_generator.7.html">iw_generator(7)</a> for information
-  on generators in general) to convert Mewburn RC scripts to InitWare unitfiles.
-<p class="Pp">Note that the native BSD
-    <a class="Xr" href="init.8.html">init(8)</a> daemon
-    <code class="Nm">/sbin/init</code> is not replaced. Instead, the InitWare
-    manager is hooked into the system through modified versions of the
-    <code class="Nm">/etc/rc</code> and <code class="Nm">/etc/rc.shutdown</code>
-    scripts. /etc/ttys thus continues to work exactly as is usual of BSD
-    systems, since it's the responsibility of the BSD init daemon.</p>
 <section class="Ss">
 <h2 class="Ss" id="Stage_1_Init"><a class="permalink" href="#Stage_1_Init">Stage
   1 Init</a></h2>
@@ -82,9 +85,9 @@ Stage 1 Init is carried out thus:
         ordering determined by
         <a class="Xr" href="rcorder.8.html">rcorder(8)</a>) up until the RC
         script which completes the tasks required of Stage 1 Init (see
-        <a class="Xr" href="iw_bootstrap.7.html">iw_bootstrap(7)</a>). On
-        NetBSD, this is the <code class="Nm">mountcritlocal</code> RC script; on
-        FreeBSD and DragonFly BSD, <code class="Nm">DISKS</code>.</p>
+        <a class="Xr" href="iw_bootstrap.7.html">iw_bootstrap(7)</a>). On NetBSD
+        and DragonFly BSD, this is the <code class="Nm">mountcritlocal</code> RC
+        script; on FreeBSD, <code class="Nm">FILESYSTEMS</code>.</p>
   </li>
   <li>The InitWare manager
       <a class="Xr" href="iw.manager.8.html">iw.manager(8)</a> is launched as a
