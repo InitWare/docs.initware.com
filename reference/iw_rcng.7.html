@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+   automatically generated with docbook2mdoc iw_rcng.7.xml
+ -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="style.css" type="text/css" media="all"/>
+  <title>IW_RCNG(7)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">IW_RCNG(7)</td>
+    <td class="head-vol">Miscellaneous Information Manual</td>
+    <td class="head-rtitle">IW_RCNG(7)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">iw_rcng</code> &#x2014;
+<div class="Nd">Mewburn RC compatibility for InitWare</div>
+</section>
+<h1 class="Sh" id="AVAILABILITY"><a class="permalink" href="#AVAILABILITY">AVAILABILITY</a></h1>
+<code class="Dv">Plat_DragonFlyBSD</code>, <code class="Dv">Plat_FreeBSD</code>,
+  <code class="Dv">Plat_NetBSD</code>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+DragonFlyBSD, FreeBSD, and NetBSD use <b class="Sy">Mewburn RC</b> as their
+  native service management scheme, and InitWare releases for those platforms
+  include a compatibility layer for the Mewburn RC system. RC scripts are
+  converted into InitWare .service units and run at boot, and TTY monitors are
+  run as normal according to the /etc/ttys file.
+<section class="Ss">
+<h2 class="Ss" id="RC_script_generation"><a class="permalink" href="#RC_script_generation">RC
+  script generation</a></h2>
+Generated unit files are created thus:
+<ul class="Bl-bullet">
+  <li><a class="permalink" href="#PROVIDE"><code class="Dv" id="PROVIDE">PROVIDE</code></a>
+      entries in the RC script are converted into unit aliases.</li>
+  <li><a class="permalink" href="#REQUIRE"><code class="Dv" id="REQUIRE">REQUIRE</code></a>
+      entries are converted into unit Wants= and After= dependencies.</li>
+  <li><a class="permalink" href="#BEFORE"><code class="Dv" id="BEFORE">BEFORE</code></a>
+      entries are converted into unit Before= dependencies, and the generated
+      unit is installed into the <span class="Pa">.wants</span> drop-in folder
+      of each target unit</li>
+  <li>If the RC script is enabled, the unit is added as a Wants= and After=
+      dependency of <span class="Pa">default.target</span>, and thus
+      automatically started on boot.</li>
+</ul>
+</section>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="IMPLEMENTATION"><a class="permalink" href="#IMPLEMENTATION">IMPLEMENTATION</a></h1>
+The compatibility subsystem is principally composed of a special Stage 1 and
+  Stage 3 Init (see
+  <a class="Xr" href="iw_bootstrap.7.html">iw_bootstrap(7)</a>) and a generator
+  (as described above; see
+  <a class="Xr" href="iw_generator.7.html">iw_generator(7)</a> for information
+  on generators in general) to convert Mewburn RC scripts to InitWare unitfiles.
+<p class="Pp">Note that the native BSD
+    <a class="Xr" href="init.8.html">init(8)</a> daemon
+    <code class="Nm">/sbin/init</code> is not replaced. Instead, the InitWare
+    manager is hooked into the system through modified versions of the
+    <code class="Nm">/etc/rc</code> and <code class="Nm">/etc/rc.shutdown</code>
+    scripts. /etc/ttys thus continues to work exactly as is usual of BSD
+    systems, since it's the responsibility of the BSD init daemon.</p>
+<section class="Ss">
+<h2 class="Ss" id="Stage_1_Init"><a class="permalink" href="#Stage_1_Init">Stage
+  1 Init</a></h2>
+Stage 1 Init is carried out thus:
+<ul class="Bl-bullet">
+  <li>The BSD kernel launches <code class="Nm">/sbin/init</code>, the
+      traditional BSD <a class="Xr" href="init.8.html">init(8)</a> daemon.</li>
+  <li><code class="Nm">init</code> invokes <code class="Nm">/etc/rc</code>, the
+      Run Control<a class="Xr" href="rc.8.html">rc(8)</a> shell script. The
+      default script supplied with the BSD distribution is replaced with a
+      modified script during the InitWare installation process.</li>
+  <li>InitWare's modified <code class="Nm">rc</code> runs early startup scripts.
+    <p class="Pp">Each Mewburn RC script is run in sequence (according to an
+        ordering determined by
+        <a class="Xr" href="rcorder.8.html">rcorder(8)</a>) up until the RC
+        script which completes the tasks required of Stage 1 Init (see
+        <a class="Xr" href="iw_bootstrap.7.html">iw_bootstrap(7)</a>). On
+        NetBSD, this is the <code class="Nm">mountcritlocal</code> RC script; on
+        FreeBSD and DragonFly BSD, <code class="Nm">DISKS</code>.</p>
+  </li>
+  <li>The InitWare manager
+      <a class="Xr" href="iw.manager.8.html">iw.manager(8)</a> is launched as a
+      background process. At this point, Stage 1 Init is essentially complete.
+      However, <code class="Nm">rc</code> doesn't exit yet.</li>
+  <li><code class="Nm">rc</code> now launches <code class="Nm">wait4pipe</code>,
+      which waits for a byte to be written to the named pipe
+      <span class="Pa">/var/run/bootdone</span>.</li>
+  <li>The InitWare special unit <span class="Pa">bootdone.service</span> writes
+      to <span class="Pa">/var/run/bootdone</span> after either the success or
+      failure of <span class="Pa">LOGIN.service</span> (the corresponding unit
+      to a no-op RC script, <span class="Pa">/etc/rc.d/LOGIN</span>, which
+      depends on all scripts which should run before system login becomes
+      possible).</li>
+  <li><code class="Nm">wait4pipe</code> having exited,
+      <code class="Nm">/etc/rc</code> completes execution and exits.
+      <code class="Nm">/sbin/init</code> now reads
+      <span class="Pa">/etc/ttys</span>, launching <code class="Nm">getty</code>
+      instances on all terminals listed therein.</li>
+</ul>
+</section>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="iw_bootstrap.7.html">iw_bootstrap(7)</a>
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">April 8, 2021</td>
+    <td class="foot-os">NetBSD 9.1_STABLE</td>
+  </tr>
+</table>
+</body>
+</html>
