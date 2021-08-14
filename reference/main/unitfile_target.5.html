@@ -1,0 +1,23 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>unitfile_target</title><link rel="stylesheet" type="text/css" href="http://docs.initware.com/reference/style.css"><meta name="generator" content="DocBook XSL Stylesheets Vsnapshot"><meta xmlns:fo="http://www.w3.org/1999/XSL/Format" name="viewport" content="width=device-width, initial-scale=1.0"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:fo="http://www.w3.org/1999/XSL/Format" id="Masthead"><a href="index.html" id="MastheadLogo"></a><div id="MastheadText">
+        InitWare Manual Pages
+     </div></div><hr xmlns:fo="http://www.w3.org/1999/XSL/Format" id="MastheadHR"><a xmlns:fo="http://www.w3.org/1999/XSL/Format" href="index.html">Index </a>·
+  <span xmlns:fo="http://www.w3.org/1999/XSL/Format" style="float:right">InitWare 0.7alpha</span><div class="refentry"><a name="idm45894523703840"></a><div class="titlepage"></div><div class="refnamediv"><h2>Name</h2><p>unitfile_target — Target unit configuration</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><p><em class="replaceable"><code>name</code></em><code class="filename">.target</code></p></div><div class="refsect1"><a name="idm45894496959856"></a><h2>Description</h2><p>A unit configuration file whose name ends in
+    <code class="literal">.target</code> encodes information about a target unit of
+    systemd, which is used for grouping units and as well-known
+    synchronization points during start-up.</p><p>This unit type has no specific options. See <a xmlns:fo="http://www.w3.org/1999/XSL/Format" href="unitfile_unit.5.html#"><span class="citerefentry"><span class="refentrytitle">unitfile_unit</span>(5)</span></a> for the common options of all unit configuration files.
+    The common configuration items are configured in the generic [Unit] and
+    [Install] sections. A separate [Target] section does not exist, since no
+    target-specific options may be configured.</p><p>Target units do not offer any additional functionality on top of the
+    generic functionality provided by units. They exist merely to group units
+    via dependencies (useful as boot targets), and to establish standardized
+    names for synchronization points used in dependencies between units. Among
+    other things, target units are a more flexible replacement for SysV
+    runlevels in the classic SysV init system. (And for compatibility reasons
+    special target units such as <code class="filename">runlevel3.target</code> exist
+    which are used by the SysV runlevel compatibility code in systemd. See
+    <a xmlns:fo="http://www.w3.org/1999/XSL/Format" href="systemd.special.7.html#"><span class="citerefentry"><span class="refentrytitle">systemd.special</span>(7)</span></a> for details).</p><p>Unless <code class="varname">DefaultDependencies=</code> is set to
+    <code class="option">false</code> , target units will implicitly complement all
+    configured dependencies of type <code class="varname">Wants=</code> ,
+    <code class="varname">Requires=</code> , <code class="varname">RequiresOverridable=</code>
+    with dependencies of type <code class="varname">After=</code> if the units in
+    question also have <code class="varname">DefaultDependencies=true</code> .</p></div><div class="refsect1"><a name="idm45894496950832"></a><h2>See Also</h2><p><a xmlns:fo="http://www.w3.org/1999/XSL/Format" href="systemd.1.html#"><span class="citerefentry"><span class="refentrytitle">systemd</span>(1)</span></a> , <a xmlns:fo="http://www.w3.org/1999/XSL/Format" href="systemctl.1.html#"><span class="citerefentry"><span class="refentrytitle">systemctl</span>(1)</span></a> , <a xmlns:fo="http://www.w3.org/1999/XSL/Format" href="unitfile_unit.5.html#"><span class="citerefentry"><span class="refentrytitle">unitfile_unit</span>(5)</span></a> , <a xmlns:fo="http://www.w3.org/1999/XSL/Format" href="systemd.special.7.html#"><span class="citerefentry"><span class="refentrytitle">systemd.special</span>(7)</span></a> , <a xmlns:fo="http://www.w3.org/1999/XSL/Format" href="systemd.directives.7.html#"><span class="citerefentry"><span class="refentrytitle">systemd.directives</span>(7)</span></a></p></div></div></body></html>

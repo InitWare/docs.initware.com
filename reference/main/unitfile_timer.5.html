@@ -1,0 +1,173 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>unitfile_timer</title><link rel="stylesheet" type="text/css" href="http://docs.initware.com/reference/style.css"><meta name="generator" content="DocBook XSL Stylesheets Vsnapshot"><meta xmlns:fo="http://www.w3.org/1999/XSL/Format" name="viewport" content="width=device-width, initial-scale=1.0"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:fo="http://www.w3.org/1999/XSL/Format" id="Masthead"><a href="index.html" id="MastheadLogo"></a><div id="MastheadText">
+        InitWare Manual Pages
+     </div></div><hr xmlns:fo="http://www.w3.org/1999/XSL/Format" id="MastheadHR"><a xmlns:fo="http://www.w3.org/1999/XSL/Format" href="index.html">Index </a>·
+  <span xmlns:fo="http://www.w3.org/1999/XSL/Format" style="float:right">InitWare 0.7alpha</span><div class="refentry"><a name="idm45423819833600"></a><div class="titlepage"></div><div class="refnamediv"><h2>Name</h2><p>unitfile_timer — Timer unit configuration</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><p>
+                        <em class="replaceable"><code>name</code></em>
+                        <code class="filename">.timer</code>
+                </p></div><div class="refsect1"><a name="idm45423793086176"></a><h2>Description</h2><p>
+                        A unit configuration file whose name ends in
+                        <code class="literal">.timer</code>
+                        encodes information about
+                a timer controlled and supervised by systemd, for
+                timer-based activation.
+                </p><p>
+                        This man page lists the configuration options
+                specific to this unit type. See
+                        <a xmlns:fo="http://www.w3.org/1999/XSL/Format" href="unitfile_unit.5.html#"><span class="citerefentry"><span class="refentrytitle">unitfile_unit</span>(5)</span></a>
+                        for the common options of all unit configuration
+                files. The common configuration items are configured
+                in the generic [Unit] and [Install] sections. The
+                timer specific configuration options are configured in
+                the [Timer] section.
+                </p><p>
+                        For each timer file, a matching unit file must
+                exist, describing the unit to activate when the timer
+                elapses. By default, a service by the same name as the
+                timer (except for the suffix) is activated. Example: a
+                timer file
+                        <code class="filename">foo.timer</code>
+                        activates a
+                matching service
+                        <code class="filename">foo.service</code>
+                        . The
+                unit to activate may be controlled by
+                        <code class="varname">Unit=</code>
+                        (see below).
+                </p><p>
+                        Unless
+                        <code class="varname">DefaultDependencies=</code>
+                        is set to
+                        <code class="option">false</code>
+                        , timer units will
+                implicitly have dependencies of type
+                        <code class="varname">Conflicts=</code>
+                        and
+                        <code class="varname">Before=</code>
+                        on
+                        <code class="filename">shutdown.target</code>
+                        . These ensure
+                that timer units are stopped cleanly prior to system
+                shutdown. Only timer units involved with early boot or
+                late system shutdown should disable this
+                option.
+                </p></div><div class="refsect1"><a name="idm45423793078336"></a><h2>Options</h2><p>Timer files must include a [Timer] section,
+                which carries information about the timer it
+                defines. The options specific to the [Timer] section
+                of timer units are the following:</p><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                                        <code class="varname">OnActiveSec=</code>
+                                , </span><span class="term">
+                                        <code class="varname">OnBootSec=</code>
+                                , </span><span class="term">
+                                        <code class="varname">OnStartupSec=</code>
+                                , </span><span class="term">
+                                        <code class="varname">OnUnitActiveSec=</code>
+                                , </span><span class="term">
+                                        <code class="varname">OnUnitInactiveSec=</code>
+                                </span></dt><dd><p>
+                                                Defines monotonic timers
+                                relative to different starting points:
+                                                <code class="varname">OnActiveSec=</code>
+                                                defines a
+                                timer relative to the moment the timer
+                                itself is
+                                activated.
+                                                <code class="varname">OnBootSec=</code>
+                                                defines a timer relative to when the
+                                machine was booted
+                                up.
+                                                <code class="varname">OnStartupSec=</code>
+                                                defines a timer relative to when
+                                systemd was first
+                                started.
+                                                <code class="varname">OnUnitActiveSec=</code>
+                                                defines a timer relative to when the
+                                unit the timer is activating was last
+                                activated.
+                                                <code class="varname">OnUnitInactiveSec=</code>
+                                                defines a timer relative to when the
+                                unit the timer is activating was last
+                                deactivated.
+                                        </p><p>
+                                                Multiple directives may be
+                                combined of the same and of different
+                                types. For example, by combining
+                                                <code class="varname">OnBootSec=</code>
+                                                and
+                                                <code class="varname">OnUnitActiveSec=</code>
+                                                , it is
+                                possible to define a timer that
+                                elapses in regular intervals and
+                                activates a specific service each
+                                time.
+                                        </p><p>
+                                                The arguments to the directives
+                                are time spans configured in
+                                seconds. Example: "OnBootSec=50" means
+                                50s after boot-up. The argument may
+                                also include time units. Example:
+                                "OnBootSec=5h 30min" means 5 hours and
+                                30 minutes after boot-up. For details
+                                about the syntax of time spans see
+                                                <a xmlns:fo="http://www.w3.org/1999/XSL/Format" href="unitfile_unit.5.html#"><span class="citerefentry"><span class="refentrytitle">unitfile_unit</span>(5)</span></a>
+                                                .
+                                        </p><p>
+                                                If a timer configured with
+                                                <code class="varname">OnBootSec=</code>
+                                                or
+                                                <code class="varname">OnStartupSec=</code>
+                                                is
+                                already in the past when the timer
+                                unit is activated, it will immediately
+                                elapse and the configured unit is
+                                started. This is not the case for
+                                timers defined in the other
+                                directives.
+                                        </p><p>These are monotonic timers,
+                                independent of wall-clock time and timezones. If the
+                                computer is temporarily suspended, the
+                                monotonic clock stops too.</p><p>If the empty string is assigned
+                                to any of these options, the list of
+                                timers is reset, and all prior
+                                assignments will have no
+                                effect.</p></dd><dt><span class="term">
+                                        <code class="varname">OnCalendar=</code>
+                                </span></dt><dd><p>
+                                                Defines realtime
+                                (i.e. wallclock) timers via calendar
+                                event expressions. See
+                                                <a xmlns:fo="http://www.w3.org/1999/XSL/Format" href="systemd.time.7.html#"><span class="citerefentry"><span class="refentrytitle">systemd.time</span>(7)</span></a>
+                                                for more information on the syntax of
+                                calendar event expressions. Otherwise
+                                the semantics are similar to
+                                                <code class="varname">OnActiveSec=</code>
+                                                and
+                                related settings.
+                                        </p></dd><dt><span class="term">
+                                        <code class="varname">Unit=</code>
+                                </span></dt><dd><p>
+                                                The unit to activate
+                                when this timer elapses. The argument is a
+                                unit name, whose suffix is not
+                                                <code class="literal">.timer</code>
+                                                . If not
+                                specified, this value defaults to a
+                                service that has the same name as the
+                                timer unit, except for the
+                                suffix. (See above.) It is recommended
+                                that the unit name that is activated
+                                and the unit name of the timer unit
+                                are named identically, except for the
+                                suffix.
+                                        </p></dd></dl></div></div><div class="refsect1"><a name="idm45423793033600"></a><h2>See Also</h2><p>
+                        <a xmlns:fo="http://www.w3.org/1999/XSL/Format" href="systemd.1.html#"><span class="citerefentry"><span class="refentrytitle">systemd</span>(1)</span></a>
+                        ,
+                        <a xmlns:fo="http://www.w3.org/1999/XSL/Format" href="systemctl.1.html#"><span class="citerefentry"><span class="refentrytitle">systemctl</span>(1)</span></a>
+                        ,
+                        <a xmlns:fo="http://www.w3.org/1999/XSL/Format" href="unitfile_unit.5.html#"><span class="citerefentry"><span class="refentrytitle">unitfile_unit</span>(5)</span></a>
+                        ,
+                        <a xmlns:fo="http://www.w3.org/1999/XSL/Format" href="unitfile_service.5.html#"><span class="citerefentry"><span class="refentrytitle">unitfile_service</span>(5)</span></a>
+                        ,
+                        <a xmlns:fo="http://www.w3.org/1999/XSL/Format" href="systemd.time.7.html#"><span class="citerefentry"><span class="refentrytitle">systemd.time</span>(7)</span></a>
+                        ,
+                        <a xmlns:fo="http://www.w3.org/1999/XSL/Format" href="systemd.directives.7.html#"><span class="citerefentry"><span class="refentrytitle">systemd.directives</span>(7)</span></a>
+                </p></div></div></body></html>

@@ -1,0 +1,142 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>unitfile_rlimit</title><link rel="stylesheet" type="text/css" href="http://docs.initware.com/reference/style.css"><meta name="generator" content="DocBook XSL Stylesheets Vsnapshot"><meta xmlns:fo="http://www.w3.org/1999/XSL/Format" name="viewport" content="width=device-width, initial-scale=1.0"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div xmlns:fo="http://www.w3.org/1999/XSL/Format" id="Masthead"><a href="index.html" id="MastheadLogo"></a><div id="MastheadText">
+        InitWare Manual Pages
+     </div></div><hr xmlns:fo="http://www.w3.org/1999/XSL/Format" id="MastheadHR"><a xmlns:fo="http://www.w3.org/1999/XSL/Format" href="index.html">Index </a>·
+  <span xmlns:fo="http://www.w3.org/1999/XSL/Format" style="float:right">InitWare 0.7alpha</span><div class="refentry"><a name="idm46209844892064"></a><div class="titlepage"></div><div class="refnamediv"><h2>Name</h2><p>unitfile_rlimit — Resource control unit settings</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><p><em class="replaceable"><code>name</code></em><code class="filename">.slice</code> ,
+    <em class="replaceable"><code>name</code></em><code class="filename">.scope</code> ,
+    <em class="replaceable"><code>name</code></em><code class="filename">.service</code> ,
+    <em class="replaceable"><code>name</code></em><code class="filename">.socket</code> ,
+    <em class="replaceable"><code>name</code></em><code class="filename">.mount</code> ,
+    <em class="replaceable"><code>name</code></em><code class="filename">.swap</code></p></div><div class="refsect1"><a name="idm46209818141392"></a><h2>Description</h2><p>Unit configuration files for services, slices, scopes, sockets,
+    mount points, and swap devices share a subset of configuration options for
+    resource control of spawned processes. Internally, this relies on the the
+    Control Groups kernel concept for organizing processes in a hierarchial
+    tree of named groups for the purpose of resource management.</p><p>This man page lists the configuration options shared by those six
+    unit types. See <a xmlns:fo="http://www.w3.org/1999/XSL/Format" href="unitfile_unit.5.html#"><span class="citerefentry"><span class="refentrytitle">unitfile_unit</span>(5)</span></a> for the common options of all unit configuration files,
+    and <a xmlns:fo="http://www.w3.org/1999/XSL/Format" href="unitfile_slice.5.html#"><span class="citerefentry"><span class="refentrytitle">unitfile_slice</span>(5)</span></a> , <a xmlns:fo="http://www.w3.org/1999/XSL/Format" href="unitfile_scope.5.html#"><span class="citerefentry"><span class="refentrytitle">unitfile_scope</span>(5)</span></a> , <a xmlns:fo="http://www.w3.org/1999/XSL/Format" href="unitfile_service.5.html#"><span class="citerefentry"><span class="refentrytitle">unitfile_service</span>(5)</span></a> , <a xmlns:fo="http://www.w3.org/1999/XSL/Format" href="unitfile_socket.5.html#"><span class="citerefentry"><span class="refentrytitle">unitfile_socket</span>(5)</span></a> , <a xmlns:fo="http://www.w3.org/1999/XSL/Format" href="unitfile_mount.5.html#"><span class="citerefentry"><span class="refentrytitle">unitfile_mount</span>(5)</span></a> , and <a xmlns:fo="http://www.w3.org/1999/XSL/Format" href="unitfile_swap.5.html#"><span class="citerefentry"><span class="refentrytitle">unitfile_swap</span>(5)</span></a> for more information on the specific unit configuration
+    files. The resource control configuration options are configured in the
+    [Slice], [Scope], [Service], [Socket], [Mount], or [Swap] sections,
+    depending on the unit type.</p><p>See the <a class="ulink" href="http://www.freedesktop.org/wiki/Software/systemd/ControlGroupInterface/" target="_top">New
+    Control Group Interfaces</a> for an introduction how to make use of
+    resource control APIs from programs.</p></div><div class="refsect1"><a name="idm46209818130448"></a><h2>Options</h2><p>Units of the types listed above can have settings for resource
+    control configuration:</p><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+          <code class="varname">CPUAccounting=</code>
+        </span></dt><dd><p>Turn on CPU usage accounting for this unit. Takes a boolean
+          argument. Note that turning on CPU accounting for one unit might
+          also implicitly turn it on for all units contained in the same slice
+          and for all its parent slices and the units contained
+          therein.</p></dd><dt><span class="term">
+          <code class="varname">CPUShares= <em class="replaceable"><code>weight</code></em></code>
+        </span></dt><dd><p>Assign the specified overall CPU time share weight to the
+          processes executed. Takes an integer value. This controls the
+          <code class="literal">cpu.shares</code> control group attribute, which
+          defaults to 1024. For details about this control group attribute,
+          see <a class="ulink" href="https://www.kernel.org/doc/Documentation/scheduler/sched-design-CFS.txt" target="_top">sched-design-CFS.txt</a>
+          .</p><p>Implies <code class="literal">CPUAccounting=true</code> .</p></dd><dt><span class="term">
+          <code class="varname">MemoryAccounting=</code>
+        </span></dt><dd><p>Turn on process and kernel memory accounting for this unit.
+          Takes a boolean argument. Note that turning on memory accounting for
+          one unit might also implicitly turn it on for all units contained in
+          the same slice and for all its parent slices and the units contained
+          therein.</p></dd><dt><span class="term">
+          <code class="varname">MemoryLimit= <em class="replaceable"><code>bytes</code></em></code>
+        </span></dt><dd><p>Specify the limit on maximum memory usage of the executed
+          processes. The limit specifies how much process and kernel memory
+          can be used by tasks in this unit. Takes a memory size in bytes. If
+          the value is suffixed with K, M, G or T, the specified memory size
+          is parsed as Kilobytes, Megabytes, Gigabytes, or Terabytes (with the
+          base 1024), respectively. This controls the
+          <code class="literal">memory.limit_in_bytes</code> control group attribute.
+          For details about this control group attribute, see <a class="ulink" href="https://www.kernel.org/doc/Documentation/cgroups/memory.txt" target="_top">memory.txt</a>
+          .</p><p>Implies <code class="literal">MemoryAccounting=true</code> .</p></dd><dt><span class="term">
+          <code class="varname">BlockIOAccounting=</code>
+        </span></dt><dd><p>Turn on Block IO accounting for this unit. Takes a boolean
+          argument. Note that turning on block IO accounting for one unit
+          might also implicitly turn it on for all units contained in the same
+          slice and all for its parent slices and the units contained
+          therein.</p></dd><dt><span class="term">
+          <code class="varname">BlockIOWeight= <em class="replaceable"><code>weight</code></em></code>
+        </span></dt><dd><p>Set the default overall block IO weight for the executed
+          processes. Takes a single weight value (between 10 and 1000) to set
+          the default block IO weight. This controls the
+          <code class="literal">blkio.weight</code> control group attribute, which
+          defaults to 1000. For details about this control group attribute,
+          see <a class="ulink" href="https://www.kernel.org/doc/Documentation/cgroups/blkio-controller.txt" target="_top">blkio-controller.txt</a>
+          .</p><p>Implies <code class="literal">BlockIOAccounting=true</code> .</p></dd><dt><span class="term">
+          <code class="varname">BlockIODeviceWeight= <em class="replaceable"><code>device</code></em>
+          <em class="replaceable"><code>weight</code></em></code>
+        </span></dt><dd><p>Set the per-device overall block IO weight for the executed
+          processes. Takes a space-separated pair of a file path and a weight
+          value to specify the device specific weight value, between 10 and
+          1000. (Example: "/dev/sda 500"). The file path may be specified as
+          path to a block device node or as any other file in which case the
+          backing block device of the file system of the file is determined.
+          This controls the <code class="literal">blkio.weight_device</code> control
+          group attribute, which defaults to 1000. Use this option multiple
+          times to set weights for multiple devices. For details about this
+          control group attribute, see <a class="ulink" href="https://www.kernel.org/doc/Documentation/cgroups/blkio-controller.txt" target="_top">blkio-controller.txt</a>
+          .</p><p>Implies <code class="literal">BlockIOAccounting=true</code> .</p></dd><dt><span class="term">
+          <code class="varname">BlockIOReadBandwidth= <em class="replaceable"><code>device</code></em>
+          <em class="replaceable"><code>bytes</code></em></code>
+        , </span><span class="term">
+          <code class="varname">BlockIOWriteBandwidth= <em class="replaceable"><code>device</code></em>
+          <em class="replaceable"><code>bytes</code></em></code>
+        </span></dt><dd><p>Set the per-device overall block IO bandwidth limit for the
+          executed processes. Takes a space-separated pair of a file path and
+          a bandwidth value (in bytes per second) to specify the device
+          specific bandwidth. The file path may be a path to a block device
+          node, or as any other file in which case the backing block device of
+          the file system of the file is used. If the bandwidth is suffixed
+          with K, M, G, or T, the specified bandwidth is parsed as Kilobytes,
+          Megabytes, Gigabytes, or Terabytes, respectively (Example:
+          "/dev/disk/by-path/pci-0000:00:1f.2-scsi-0:0:0:0 5M"). This controls
+          the <code class="literal">blkio.read_bps_device</code> and
+          <code class="literal">blkio.write_bps_device</code> control group attributes.
+          Use this option multiple times to set bandwidth limits for multiple
+          devices. For details about these control group attributes, see
+          <a class="ulink" href="https://www.kernel.org/doc/Documentation/cgroups/blkio-controller.txt" target="_top">blkio-controller.txt</a>
+          .</p><p>Implies <code class="literal">BlockIOAccounting=true</code> .</p></dd><dt><span class="term">
+          <code class="varname">DeviceAllow=</code>
+        </span></dt><dd><p>Control access to specific device nodes by the executed
+          processes. Takes two space-separated strings: a device node path
+          (such as <code class="filename">/dev/null</code> ) followed by a combination
+          of <code class="constant">r</code> , <code class="constant">w</code> ,
+          <code class="constant">m</code> to control <span class="emphasis"><em>r</em></span> eading,
+          <span class="emphasis"><em>w</em></span> riting, or creation of the specific device
+          node by the unit ( <span class="emphasis"><em>m</em></span> knod), respectively. This
+          controls the <code class="literal">devices.allow</code> and
+          <code class="literal">devices.deny</code> control group attributes. For
+          details about these control group attributes, see <a class="ulink" href="https://www.kernel.org/doc/Documentation/cgroups/devices.txt" target="_top">devices.txt</a>
+          .</p></dd><dt><span class="term">
+          <code class="varname">DevicePolicy=auto|closed|strict</code>
+        </span></dt><dd><p>Control the policy for allowing device access:</p><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                <code class="option">strict</code>
+              </span></dt><dd><p>means to only allow types of access that are explicitly
+                specified.</p></dd><dt><span class="term">
+                <code class="option">closed</code>
+              </span></dt><dd><p>in addition, allows access to standard pseudo devices
+                including <code class="filename">/dev/null</code> ,
+                <code class="filename">/dev/zero</code> ,
+                <code class="filename">/dev/full</code> ,
+                <code class="filename">/dev/random</code> , and
+                <code class="filename">/dev/urandom</code> .</p></dd><dt><span class="term">
+                <code class="option">auto</code>
+              </span></dt><dd><p>in addition, allows access to all devices if no explicit
+                <code class="varname">DeviceAllow=</code> is present. This is the
+                default.</p></dd></dl></div></dd><dt><span class="term">
+          <code class="varname">Slice=</code>
+        </span></dt><dd><p>The name of the slice unit to place the unit in. Defaults to
+          <code class="filename">system.slice</code> for all non-instantiated units of
+          all unit types (except for slice units themselves see below).
+          Instance units are by default placed in a subslice of
+          <code class="filename">system.slice</code> that is named after the template
+          name.</p><p>This option may be used to arrange systemd units in a
+          hierarchy of slices each of which might have resource settings
+          applied.</p><p>For units of type slice, the only accepted value for this
+          setting is the parent slice. Since the name of a slice unit implies
+          the parent slice, it is hence redundant to ever set this parameter
+          directly for slice units.</p></dd></dl></div></div><div class="refsect1"><a name="idm46209818054384"></a><h2>See Also</h2><p><a xmlns:fo="http://www.w3.org/1999/XSL/Format" href="systemd.1.html#"><span class="citerefentry"><span class="refentrytitle">systemd</span>(1)</span></a> , <a xmlns:fo="http://www.w3.org/1999/XSL/Format" href="unitfile_unit.5.html#"><span class="citerefentry"><span class="refentrytitle">unitfile_unit</span>(5)</span></a> , <a xmlns:fo="http://www.w3.org/1999/XSL/Format" href="unitfile_service.5.html#"><span class="citerefentry"><span class="refentrytitle">unitfile_service</span>(5)</span></a> , <a xmlns:fo="http://www.w3.org/1999/XSL/Format" href="unitfile_slice.5.html#"><span class="citerefentry"><span class="refentrytitle">unitfile_slice</span>(5)</span></a> , <a xmlns:fo="http://www.w3.org/1999/XSL/Format" href="unitfile_scope.5.html#"><span class="citerefentry"><span class="refentrytitle">unitfile_scope</span>(5)</span></a> , <a xmlns:fo="http://www.w3.org/1999/XSL/Format" href="unitfile_socket.5.html#"><span class="citerefentry"><span class="refentrytitle">unitfile_socket</span>(5)</span></a> , <a xmlns:fo="http://www.w3.org/1999/XSL/Format" href="unitfile_mount.5.html#"><span class="citerefentry"><span class="refentrytitle">unitfile_mount</span>(5)</span></a> , <a xmlns:fo="http://www.w3.org/1999/XSL/Format" href="unitfile_swap.5.html#"><span class="citerefentry"><span class="refentrytitle">unitfile_swap</span>(5)</span></a> , <a xmlns:fo="http://www.w3.org/1999/XSL/Format" href="systemd.directives.7.html#"><span class="citerefentry"><span class="refentrytitle">systemd.directives</span>(7)</span></a> , <a xmlns:fo="http://www.w3.org/1999/XSL/Format" href="systemd.special.7.html#"><span class="citerefentry"><span class="refentrytitle">systemd.special</span>(7)</span></a> , The documentation for control groups and specific
+    controllers in the Linux kernel: <a class="ulink" href="https://www.kernel.org/doc/Documentation/cgroups/cgroups.txt" target="_top">cgroups.txt</a>
+    , <a class="ulink" href="https://www.kernel.org/doc/Documentation/cgroups/cpuacct.txt" target="_top">cpuacct.txt</a>
+    , <a class="ulink" href="https://www.kernel.org/doc/Documentation/cgroups/memory.txt" target="_top">memory.txt</a>
+    , <a class="ulink" href="https://www.kernel.org/doc/Documentation/cgroups/blkio-controller.txt" target="_top">blkio-controller.txt</a>
+    .</p></div></div></body></html>
