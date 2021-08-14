@@ -1,43 +1,60 @@
-  #MainContainer {
-    margin: 0px 1rem;
-  }
+#MainContainer {
+  margin: 0px 1rem;
+}
 
-  #Masthead {
-    min-height: 4.1rem;
-    background: none;
-    border    : none;
-    width     : 100%;
-  }
+#Masthead {
+  min-height: 4.1rem;
+  background: none;
+  border    : none;
+  width     : 100%;
+}
 
-  #MastheadLogo {
-    color              : white;
-    background-color   : white;
-    background-image   : url(//brand.initware.com/assets/b-logo.svg);
-    background-position: left bottom;
-    background-repeat  : no-repeat;
-    background-size    : auto 2.75rem;
-    float              : left;
-    height             : 4.25rem;
-    width              : 20rem;
-    border             : none;
-    text-decoration    : none;
-  }
+#MastheadLogo {
+  color              : white;
+  background-color   : white;
+  background-image   : url(//brand.initware.com/assets/b-logo.svg);
+  background-position: left bottom;
+  background-repeat  : no-repeat;
+  background-size    : auto 2.75rem;
+  float              : left;
+  height             : 4.25rem;
+  width              : 20rem;
+  border             : none;
+  text-decoration    : none;
+}
 
-  #MastheadText {
-    padding-top: 2.65rem;
-    font-size  : 1.25rem;
-  }
+#MastheadText {
+  padding-top: 2.65rem;
+  font-size  : 1.25rem;
+}
 
-  #MastheadHR {
-    border-top: 0.25rem solid #1e8bc3;
-  }
+#MastheadHR {
+  border-top: 0.25rem solid #1e8bc3;
+}
 
-  .refentry {
-    max-width: 50em;
-  }
+p,
+.table-contents,
+div.variablelist {
+  margin: 1rem 3rem;
+}
+
+.refentry {
+  max-width: 50em;
+}
+
+@media screen and (max-width:767px) {
 
   p,
   .table-contents,
   div.variablelist {
-    margin: 1em 4em;
+    margin: 1rem 0.5rem;
   }
+
+  #MainContainer {
+    margin: 0px 0.25rem;
+  }
+
+  #MastheadLogo {
+    width: 100%;
+  }
+}
